@@ -5,8 +5,12 @@ import android.util.AttributeSet;
 import android.view.View;
 
 /**
- * Created by dany on 6/30/16.
- */
+ * Copyright (c) 2016 Dany Madden
+ * Please see LICENSE file for licensing detail.
+ *
+ * Based on Sue Smith's tutorial: 
+ * http://code.tutsplus.com/tutorials/android-sdk-create-a-drawing-app-interface-creation--mobile-19021
+ **/
 public class DrawingView extends View {
     public DrawingView(Context context, AttributeSet attrs) {
         super(context, attrs);
