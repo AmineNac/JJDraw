@@ -1,6 +1,7 @@
 package com.example.dany.jjdraw;
 
 import android.content.Context;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.MotionEvent;
@@ -9,6 +10,9 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.util.TypedValue;
 /**
  * Copyright (c) 2016 Dany Madden
  * Please see LICENSE file for licensing detail.
@@ -27,36 +31,42 @@ public class DrawingView extends View {
 	private int paintColor = 0xFF660000;
 	private Canvas drawCanvas;
 	private Bitmap canvasBitmap;
+	private float brushSize, lastBrushSize;
+	private boolean erase = false;
 
     public DrawingView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setupDrawing();
     }
     private void setupDrawing() {
-	drawPath = new Path();
-	drawPaint = new Paint();
+		brushSize = getResources().getInteger(R.integer.medium_size);
+		lastBrushSize = brushSize;
 
-	drawPaint.setColor(paintColor);
-	drawPaint.setAntiAlias(true);
-	drawPaint.setStrokeWidth(20);
-	drawPaint.setStyle(Paint.Style.STROKE);
-	drawPaint.setStrokeJoin(Paint.Join.ROUND);
-	drawPaint.setStrokeCap(Paint.Cap.ROUND);
+		drawPath = new Path();
+		drawPaint = new Paint();
 
-	canvasPaint = new Paint(Paint.DITHER_FLAG);
+		drawPaint.setColor(paintColor);
+		drawPaint.setAntiAlias(true);
+		drawPaint.setStrokeWidth(brushSize);
+		drawPaint.setStyle(Paint.Style.STROKE);
+		drawPaint.setStrokeJoin(Paint.Join.ROUND);
+		drawPaint.setStrokeCap(Paint.Cap.ROUND);
+
+		canvasPaint = new Paint(Paint.DITHER_FLAG);
+
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     	super.onSizeChanged (w, h, oldw, oldh);
-	canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-	drawCanvas = new Canvas(canvasBitmap);
+		canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+		drawCanvas = new Canvas(canvasBitmap);
     }
     
     @Override
     protected void onDraw(Canvas canvas) {
-	canvas.drawBitmap(canvasBitmap, 0, 0, canvasPaint);
-	canvas.drawPath(drawPath, drawPaint);
+		canvas.drawBitmap(canvasBitmap, 0, 0, canvasPaint);
+		canvas.drawPath(drawPath, drawPaint);
     }
 
     @Override
@@ -85,11 +95,39 @@ public class DrawingView extends View {
 		return true;
 	
     }
+	public void setBrushSize(float newSize) {
+		brushSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+				newSize, getResources().getDisplayMetrics());
+		drawPaint.setStrokeWidth(brushSize);
+	}
+
+	public void setLastBrushSize(float lastSize) {
+		lastBrushSize = lastSize;
+	}
+
+	public float getLastBrushSize() {
+		return lastBrushSize;
+	}
 
 	public void setColor(String newColor) {
 		invalidate();
 		paintColor = Color.parseColor(newColor);
 		drawPaint.setColor(paintColor);
+	}
+
+	public void setErase(boolean isErase) {
+		erase = isErase;
+
+		if(erase)
+			drawPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+		else
+			drawPaint.setXfermode(null);
+	}
+
+	public void startNew(){
+		drawCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
+		invalidate();
+		setErase(false);
 	}
 
 }
