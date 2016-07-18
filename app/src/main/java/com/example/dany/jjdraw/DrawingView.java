@@ -15,6 +15,7 @@ import android.graphics.PorterDuffXfermode;
 import android.util.TypedValue;
 /**
  * Copyright (c) 2016 Dany Madden
+ * This is released under the MIT license.
  * Please see LICENSE file for licensing detail.
  *
  * Based on Sue Smith's tutorial: 

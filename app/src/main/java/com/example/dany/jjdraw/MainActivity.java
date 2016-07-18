@@ -15,8 +15,9 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 /**
  * Copyright (c) 2016 Dany Madden
+ * This is released under the MIT license.
  * Please see LICENSE file for licensing detail.
- *
+ * 
  * Based on Sue Smith's tutorial:
  * http://code.tutsplus.com/tutorials/android-sdk-create-a-drawing-app-interface-creation--mobile-19021
  **/
@@ -173,10 +174,11 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 			saveDialog.setMessage("Save drawing to device Gallery?");
 			saveDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener(){
 				public void onClick(DialogInterface dialog, int which){
+
 					//save drawing
 					drawView.setDrawingCacheEnabled(true);
 					String imgSaved = MediaStore.Images.Media.insertImage(
-							getContentResolver(), drawView.getDrawingCache(),
+							MainActivity.this.getContentResolver(), drawView.getDrawingCache(),
 							UUID.randomUUID().toString()+".png", "drawing");
 
 					if(imgSaved!=null){
