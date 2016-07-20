@@ -14,6 +14,12 @@
         android:orientation="horizontal"
         android:weightSum="1">
         <ImageButton
+            android:id="@+id/insert_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:contentDescription="@string/insert"
+            android:src="@drawable/insert1" />
+        <ImageButton
             android:id="@+id/new_btn"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"

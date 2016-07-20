@@ -1,5 +1,6 @@
 package com.example.dany.jjdraw;
 
+import android.graphics.Bitmap;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +14,11 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.util.Log;
 /**
  * Copyright (c) 2016 Dany Madden
  * This is released under the MIT license.
@@ -26,8 +32,11 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
 	private DrawingView drawView;
-	private ImageButton currPaint, drawBtn, eraseBtn, newBtn, saveBtn;
+	private ImageButton currPaint, drawBtn, eraseBtn, newBtn, saveBtn, insertBtn;
 	private float smallBrush, mediumBrush, largeBrush;
+
+    // insert image from gallery
+    private static int RESULT_LOAD_IMAGE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +63,19 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
 		saveBtn = (ImageButton)findViewById(R.id.save_btn);
 		saveBtn.setOnClickListener(this);
+
+        insertBtn = (ImageButton)findViewById(R.id.insert_btn);
+        insertBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+
+                Intent i = new Intent(
+                        Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                startActivityForResult(i, RESULT_LOAD_IMAGE);
+            }
+        });
 
     }
 	
@@ -155,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 			newDialog.setMessage("Start new drawing (you will lose the current drawing)?");
 			newDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener(){
 				public void onClick(DialogInterface dialog, int which){
-					drawView.startNew();
+					drawView.startNew(null);
 					dialog.dismiss();
 				}
 			});
@@ -202,7 +224,34 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 			});
 			saveDialog.show();
 		}
+
 	}
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        /*
+         * Loading an image from gallery is based on
+         * http://viralpatel.net/blogs/pick-image-from-galary-android-app/
+         */
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+
+            Bitmap workingBitmap = 	BitmapFactory.decodeFile(picturePath);
+            Bitmap mutableBitmap = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
+
+            drawView.drawCanvas.drawBitmap(mutableBitmap, 0, 0, drawView.canvasPaint);
+            drawView.setImageBitmap(mutableBitmap);
+        }
+    }
 }

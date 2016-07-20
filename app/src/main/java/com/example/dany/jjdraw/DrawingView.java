@@ -1,6 +1,7 @@
 package com.example.dany.jjdraw;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.View;
@@ -13,6 +14,10 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.util.TypedValue;
+import android.widget.ImageView;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+
 /**
  * Copyright (c) 2016 Dany Madden
  * This is released under the MIT license.
@@ -24,13 +29,14 @@ import android.util.TypedValue;
 
 
 
-public class DrawingView extends View {
+public class DrawingView extends ImageView {
 
 	private Path drawPath;
-	private Paint drawPaint, canvasPaint;
+	private Paint drawPaint;
+	public Paint canvasPaint;
 	// initial color
 	private int paintColor = 0xFF660000;
-	private Canvas drawCanvas;
+	public Canvas drawCanvas;
 	private Bitmap canvasBitmap;
 	private float brushSize, lastBrushSize;
 	private boolean erase = false;
@@ -125,10 +131,19 @@ public class DrawingView extends View {
 			drawPaint.setXfermode(null);
 	}
 
-	public void startNew(){
-		drawCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
-		invalidate();
-		setErase(false);
+	public void startNew(String path){
+
+		if (path == null) {
+			drawCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
+			invalidate();
+			setErase(false);
+		} else {
+
+			//drawCanvas = new Canvas(mutableBitmap);
+			Log.d("DEBUG", "should set image background");
+			//invalidate();
+			//setErase(false);
+		}
 	}
 
 }
