@@ -10,4 +10,10 @@
 	<string name="sml">Small</string>
 	<string name="med">Medium</string>
 	<string name="lrg">Large</string>
+    <string name="aboutString">Developed by:</string>
+    <string name="exitButton">Exit</string>
+    <string name="aboutButton">About</string>
+    <string name="who">Dany Madden</string>
+    <string name="license">License</string>
+    <string name="licenseString">Released under the MIT License.</string>
 </resources>
