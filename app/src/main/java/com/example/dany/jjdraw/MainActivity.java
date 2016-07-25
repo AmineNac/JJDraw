@@ -249,18 +249,18 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
 
-            Bitmap workingBitmap = 	BitmapFactory.decodeFile(picturePath);
-            Bitmap mutableBitmap = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
-
-            drawView.drawCanvas.drawBitmap(mutableBitmap, 0, 0, drawView.canvasPaint);
-            drawView.setImageBitmap(mutableBitmap);
+			drawView.startNew(picturePath);
         }
     }
+
+	// overflow menu
     @Override
     public boolean onCreateOptionsMenu (Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
+	// overflow menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

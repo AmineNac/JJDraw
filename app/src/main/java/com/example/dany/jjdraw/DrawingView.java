@@ -33,10 +33,10 @@ public class DrawingView extends ImageView {
 
 	private Path drawPath;
 	private Paint drawPaint;
-	public Paint canvasPaint;
+	private Paint canvasPaint;
 	// initial color
 	private int paintColor = 0xFF660000;
-	public Canvas drawCanvas;
+	private Canvas drawCanvas;
 	private Bitmap canvasBitmap;
 	private float brushSize, lastBrushSize;
 	private boolean erase = false;
@@ -138,6 +138,10 @@ public class DrawingView extends ImageView {
 			invalidate();
 			setErase(false);
 		} else {
+			Bitmap workingBitmap = 	BitmapFactory.decodeFile(path);
+			Bitmap mutableBitmap = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
+			drawCanvas.drawBitmap(mutableBitmap, 0, 0, canvasPaint);
+			setImageBitmap(mutableBitmap);
 
 			//drawCanvas = new Canvas(mutableBitmap);
 			Log.d("DEBUG", "should set image background");
