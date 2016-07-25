@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+import android.text.method.LinkMovementMethod;
 
 /**
  * Copyright (c) 2016 Dany Madden
@@ -16,6 +18,9 @@ public class About extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+
+        TextView t2 = (TextView) findViewById(R.id.credit);
+        t2.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
 }
