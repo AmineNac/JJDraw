@@ -21,6 +21,9 @@ public class About extends Activity {
 
         TextView t2 = (TextView) findViewById(R.id.credit);
         t2.setMovementMethod(LinkMovementMethod.getInstance());
+
+        TextView t3 = (TextView) findViewById(R.id.source);
+        t3.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
 }

@@ -19,5 +19,10 @@
     <string name="who">Copyright (R) 2016 Dany Madden.</string>
     <string name="license">License</string>
     <string name="licenseString">Released under the MIT License.</string>
-    <string name="SueSmith">Framework based on Sue Smith\'s <a href="http://code.tutsplus.com/tutorials/android-sdk-create-a-drawing-app-interface-creation--mobile-19021">Tutorial</a>.</string>
+    <string name="SueSmith">Framework based on Sue Smith\'s <a href=
+        "http://code.tutsplus.com/tutorials/android-sdk-create-a-drawing-app-interface-creation--mobile-19021"
+        >Tutorial</a>.</string>
+
+    <string name="github">Sourcecode available on <a href="https://github.com/dany4madden/JJDraw.git">GitHub</a>.</string>
+
 </resources>

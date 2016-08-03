@@ -37,5 +37,12 @@
         android:layout_marginLeft="20dp"
         android:text="@string/SueSmith" />
 
+    <TextView
+        android:id="@+id/source"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:text="@string/github" />
+
 
 </LinearLayout>
