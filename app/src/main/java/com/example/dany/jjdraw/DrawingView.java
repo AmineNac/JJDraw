@@ -2,9 +2,7 @@ package com.example.dany.jjdraw;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
-import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.MotionEvent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -15,8 +13,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.util.TypedValue;
 import android.widget.ImageView;
-import android.graphics.BitmapFactory;
-import android.util.Log;
+import java.util.ArrayList;
 
 /**
  * Copyright (c) 2016 Dany Madden
@@ -35,11 +32,18 @@ public class DrawingView extends ImageView {
 	private Paint drawPaint;
 	private Paint canvasPaint;
 	// initial color
-	private int paintColor = 0xFF660000;
+	private int paintColor = 0xFFF5F5DC;
 	private Canvas drawCanvas;
 	private Bitmap canvasBitmap;
 	private float brushSize, lastBrushSize;
 	private boolean erase = false;
+	// strokes drawn so far (the last MAX strokes)
+	private ArrayList<Stroke> undoStrokes = new ArrayList<Stroke>();
+
+	// strokes that were undone.
+	private ArrayList<Stroke> undoneStrokes = new ArrayList<Stroke>();
+	static final int MAX = 20;
+	private Stroke currentStroke;
 
     public DrawingView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -60,7 +64,7 @@ public class DrawingView extends ImageView {
 		drawPaint.setStrokeCap(Paint.Cap.ROUND);
 
 		canvasPaint = new Paint(Paint.DITHER_FLAG);
-
+		currentStroke = new Stroke();
     }
 
     @Override
@@ -74,7 +78,51 @@ public class DrawingView extends ImageView {
     protected void onDraw(Canvas canvas) {
 		canvas.drawBitmap(canvasBitmap, 0, 0, canvasPaint);
 		canvas.drawPath(drawPath, drawPaint);
+		invalidate();
     }
+
+	// when undo is click we call this
+	protected boolean onClickUndo() {
+		boolean ret = false;
+
+		// remove from undoStrokes list, add it to undoneStrokes list
+		if (undoStrokes.size() > 0) {
+			Stroke theStroke = undoStrokes.remove(undoStrokes.size()-1);
+            Paint mypaint = new Paint();
+			undoneStrokes.add(theStroke);
+
+			// draw the undo stroke before all other strokes.
+			// otherwise part of the newer strokes will be drawn over by this.
+			drawPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+			drawCanvas.drawPath(theStroke.path, drawPaint);
+			drawPaint.setXfermode(null);
+			invalidate();
+
+			for (int i = 0; i < undoStrokes.size() ; i++) {
+                undoStrokes.get(i).paint.setColor(undoStrokes.get(i).color);
+				drawCanvas.drawPath(undoStrokes.get(i).path, undoStrokes.get(i).paint);
+				invalidate();
+			}
+
+			ret = true;
+		}
+		return ret;
+	}
+
+	protected boolean onClickRedo() {
+		Boolean ret = false;
+		if (undoneStrokes.size() > 0) {
+			Stroke theStroke = undoneStrokes.remove(undoneStrokes.size()-1);
+			undoStrokes.add(theStroke);
+
+            theStroke.paint.setColor(theStroke.color);
+			// draw it!
+			drawCanvas.drawPath(theStroke.path, theStroke.paint);
+			invalidate();
+			ret = true;
+		}
+		return ret;
+	}
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -84,6 +132,7 @@ public class DrawingView extends ImageView {
     	switch (event.getAction()) {
 		// user touches a location, move there
 		case MotionEvent.ACTION_DOWN:
+			currentStroke = new Stroke();
     		drawPath.moveTo(touchX, touchY);
     		break;
 		// draw line when move
@@ -93,7 +142,25 @@ public class DrawingView extends ImageView {
 		// user releases the touch
 		case MotionEvent.ACTION_UP:
     		drawCanvas.drawPath(drawPath, drawPaint);
-    		drawPath.reset();
+			invalidate();
+
+			// keep track of the last MAX strokes.
+			currentStroke.setPaint(drawPaint);
+			currentStroke.setColor(paintColor);
+			currentStroke.setPath(drawPath);
+
+			if (undoStrokes.size() < MAX) {
+				undoStrokes.add(currentStroke);
+			}
+			else {
+				// shift the first stroke off the undolist. We only keep track of MAX strokes.
+				ArrayList<Stroke> tmps = new ArrayList<Stroke>(undoStrokes.subList(1, MAX));
+				undoStrokes = tmps;
+				undoStrokes.add(currentStroke);
+			}
+			drawPath = new Path();
+			drawPath.reset();
+
     		break;
 		default:
     		return false;
@@ -122,6 +189,10 @@ public class DrawingView extends ImageView {
 		drawPaint.setColor(paintColor);
 	}
 
+	public int getColor () {
+		return paintColor;
+	}
+
 	public void setErase(boolean isErase) {
 		erase = isErase;
 
@@ -133,21 +204,24 @@ public class DrawingView extends ImageView {
 
 	public void startNew(String path){
 
+		undoneStrokes = new ArrayList<Stroke>();
+		undoneStrokes.clear();
+
+		undoStrokes = new ArrayList<Stroke>();
+		undoStrokes.clear();
+
 		if (path == null) {
 			drawCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
-			invalidate();
-			setErase(false);
+
 		} else {
 			Bitmap workingBitmap = 	BitmapFactory.decodeFile(path);
 			Bitmap mutableBitmap = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
 			drawCanvas.drawBitmap(mutableBitmap, 0, 0, canvasPaint);
 			setImageBitmap(mutableBitmap);
 
-			//drawCanvas = new Canvas(mutableBitmap);
-			Log.d("DEBUG", "should set image background");
-			//invalidate();
-			//setErase(false);
 		}
+		invalidate();
+		setErase(false);
 	}
 
 }

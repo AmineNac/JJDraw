@@ -1,6 +1,5 @@
 package com.example.dany.jjdraw;
 
-import android.graphics.Bitmap;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,9 +16,7 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.util.Log;
 import android.view.Menu;
 /**
  * Copyright (c) 2016 Dany Madden
@@ -34,7 +31,7 @@ import android.view.Menu;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
 	private DrawingView drawView;
-	private ImageButton currPaint, drawBtn, eraseBtn, newBtn, saveBtn, insertBtn;
+	private ImageButton currPaint, drawBtn, eraseBtn, newBtn, saveBtn, insertBtn, undoBtn, redoBtn;
 	private float smallBrush, mediumBrush, largeBrush;
 
     // insert image from gallery
@@ -78,6 +75,30 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 startActivityForResult(i, RESULT_LOAD_IMAGE);
             }
         });
+
+		undoBtn = (ImageButton)findViewById(R.id.undo_btn);
+		undoBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (!drawView.onClickUndo()) {
+					Toast nothingToast = Toast.makeText(getApplicationContext(),
+							"Nothing to Undo!", Toast.LENGTH_SHORT);
+					nothingToast.show();
+				}
+			}
+		});
+
+		redoBtn = (ImageButton)findViewById(R.id.redo_btn);
+		redoBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (!drawView.onClickRedo()) {
+					Toast nothingToast = Toast.makeText(getApplicationContext(),
+							"Nothing to Redo!", Toast.LENGTH_SHORT);
+					nothingToast.show();
+				}
+			}
+		});
 
     }
 	
@@ -211,9 +232,16 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 						savedToast.show();
 					}
 					else{
-						Toast unsavedToast = Toast.makeText(getApplicationContext(),
-								"Oops! Image could not be saved.", Toast.LENGTH_SHORT);
-						unsavedToast.show();
+						for (int i = 0; i < 3; i++) { // tried to increase the duration
+							Toast unsavedToast = Toast.makeText(getApplicationContext(),
+									"Oops! Image could not be saved. " +
+											"Explicit write permission to storage device may required." +
+											"Check Settings->" +
+											"Application Manager->" +
+											"JJDraw->" +
+											"Permissions.", Toast.LENGTH_LONG);
+							unsavedToast.show();
+						}
 					}
 
 					drawView.destroyDrawingCache();
