@@ -13,10 +13,10 @@
 	<string name="sml">Small</string>
 	<string name="med">Medium</string>
 	<string name="lrg">Large</string>
-    <string name="aboutString">Release 1.0-dev</string>
+    <string name="aboutString">Release 1.0</string>
     <string name="exitButton">Exit</string>
     <string name="aboutButton">About</string>
-    <string name="who">Copyright (R) 2016 Dany Madden.</string>
+    <string name="who">Copyright (c) 2016 Dany Madden.</string>
     <string name="license">License</string>
     <string name="licenseString">Released under the MIT License.</string>
     <string name="SueSmith">Framework based on Sue Smith\'s <a href=
