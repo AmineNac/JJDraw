@@ -5,7 +5,7 @@ JJDraw is released under the MIT license. Please see LICENSE file for detail.
 Author: Dany Madden <dany4madden@gmail.com>
 
 DESCRIPTION:
-JJDraw is A simple drawing app for Android devices. It is developed using Android Studio 2.1.2.  
+JJDraw is a simple drawing app for Android devices. It is developed using Android Studio 2.1.2.  
 
 User can:
 - Start a new drawing.
@@ -18,8 +18,8 @@ User can:
 DOWNLOAD: git clone https://github.com/dany4madden/JJDraw.git
 
 IMPORT TO ANDROID STUDIO:
-1. Clone the repository (see DOWNLOAD above)
-2. Start Android Studio:
+ 1. Clone the repository (see DOWNLOAD above.)
+ 2. Start Android Studio:
    - Select Open an Existing Android Studio Project.
    - Navigate to the directory where you cloned the JJDraw repository, then select Open.
 
