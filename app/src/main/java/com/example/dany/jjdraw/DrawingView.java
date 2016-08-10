@@ -42,7 +42,7 @@ public class DrawingView extends ImageView {
 
 	// strokes that were undone.
 	private ArrayList<Stroke> undoneStrokes = new ArrayList<Stroke>();
-	static final int MAX = 20;
+	static final int MAX = 50;
 	private Stroke currentStroke;
 
     public DrawingView(Context context, AttributeSet attrs) {
@@ -91,15 +91,14 @@ public class DrawingView extends ImageView {
             Paint mypaint = new Paint();
 			undoneStrokes.add(theStroke);
 
-			// draw the undo stroke before all other strokes.
-			// otherwise part of the newer strokes will be drawn over by this.
-			drawPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-			drawCanvas.drawPath(theStroke.path, drawPaint);
-			drawPaint.setXfermode(null);
-			invalidate();
+			// clear the canvas
+			drawCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
 
+			// draw the strokes that we wanted.
 			for (int i = 0; i < undoStrokes.size() ; i++) {
+                undoStrokes.get(i).paint.setXfermode(null);
                 undoStrokes.get(i).paint.setColor(undoStrokes.get(i).color);
+				undoStrokes.get(i).paint.setStrokeWidth(undoStrokes.get(i).brushSize);
 				drawCanvas.drawPath(undoStrokes.get(i).path, undoStrokes.get(i).paint);
 				invalidate();
 			}
@@ -116,6 +115,7 @@ public class DrawingView extends ImageView {
 			undoStrokes.add(theStroke);
 
             theStroke.paint.setColor(theStroke.color);
+			theStroke.paint.setStrokeWidth(theStroke.brushSize);
 			// draw it!
 			drawCanvas.drawPath(theStroke.path, theStroke.paint);
 			invalidate();
@@ -144,19 +144,21 @@ public class DrawingView extends ImageView {
     		drawCanvas.drawPath(drawPath, drawPaint);
 			invalidate();
 
-			// keep track of the last MAX strokes.
-			currentStroke.setPaint(drawPaint);
-			currentStroke.setColor(paintColor);
-			currentStroke.setPath(drawPath);
+			// keep track of the last MAX strokes if we're not erasing.
+			if (erase == false) {
+				currentStroke.setPaint(drawPaint);
+				currentStroke.setColor(paintColor);
+				currentStroke.setPath(drawPath);
+				currentStroke.setBrushSize(brushSize);
 
-			if (undoStrokes.size() < MAX) {
-				undoStrokes.add(currentStroke);
-			}
-			else {
-				// shift the first stroke off the undolist. We only keep track of MAX strokes.
-				ArrayList<Stroke> tmps = new ArrayList<Stroke>(undoStrokes.subList(1, MAX));
-				undoStrokes = tmps;
-				undoStrokes.add(currentStroke);
+				if (undoStrokes.size() < MAX) {
+					undoStrokes.add(currentStroke);
+				} else {
+					// shift the first stroke off the undolist. We only keep track of MAX strokes.
+					ArrayList<Stroke> tmps = new ArrayList<Stroke>(undoStrokes.subList(1, MAX));
+					undoStrokes = tmps;
+					undoStrokes.add(currentStroke);
+				}
 			}
 			drawPath = new Path();
 			drawPath.reset();
